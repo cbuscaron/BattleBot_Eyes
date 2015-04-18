@@ -73,6 +73,8 @@ void loop()
   //Tft.fillCircle(poY, poX, 40,BLACK);
   
   if((poX >= xPrev + 3 || poX <= xPrev - 3 ) || (poY <= yPrev -3 || poY >= yPrev + 3)){
+      
+      Tft.fillCircle(poY, poX, 40,BLACK);
       Tft.fillCircle(yPrev, xPrev, 46,WHITE);
       Tft.fillCircle(poY, poX, 40,BLACK);
   
