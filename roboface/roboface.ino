@@ -57,12 +57,10 @@ Adafruit_8x16matrix matrix[4] = { // Array of Adafruit_8x8matrix objects
   Adafruit_8x16matrix(), Adafruit_8x16matrix(),
   Adafruit_8x16matrix(), Adafruit_8x16matrix()};
 
-// Rather than assigning matrix addresses sequentially in a loop, each
-// has a spot in this array.  This makes it easier if you inadvertently
-// install one or more matrices in the wrong physical position --
-// re-order the addresses in this table and you can still refer to
-// matrices by index above, no other code or wiring needs to change.
+Adafruit_8x8matrix matrix4 = Adafruit_8x8matrix();
+
 static const uint8_t matrixAddr[] = { 0x70, 0x71, 0x72, 0x73, 0x74};
+
 static const uint8_t PROGMEM // Bitmaps are stored in program memory
   blinkImg[][8] = {    // Eye animation frames
   { B00111100,         // Fully open eye
@@ -116,33 +114,33 @@ static const uint8_t PROGMEM // Bitmaps are stored in program memory
     B11111111, B11111111, B11111111 },
   { B00000000, B00000000, B00000000, // Mouth position B
     B00000000, B00000000, B00000000,
-    B00111111, B11111111, B11111100,
-    B00000111, B00000000, B11100000,
-    B00000000, B11111111, B00000000,
+    B00000000, B00000000, B00000000,
+    B00011111, B11111111, B11111000,
+    B00011111, B11111111, B11111000,
+    B00011111, B11111111, B11111000,
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111 },
+  { B00000000, B00000000, B00000000, // Eye 3
     B00000000, B00000000, B00000000,
     B00000000, B00000000, B00000000,
-    B00000000, B00000000, B00000000 },
-  { B00000000, B00000000, B00000000, // Mouth position C
     B00000000, B00000000, B00000000,
-    B00111111, B11111111, B11111100,
-    B00001000, B00000000, B00010000,
-    B00000110, B00000000, B01100000,
-    B00000001, B11000011, B10000000,
-    B00000000, B00111100, B00000000,
-    B00000000, B00000000, B00000000 },
+    B00000000, B00000000, B00000000,
+    B00000000, B00000000, B00000000,
+    B00000011, B11111111, B11000000,
+    B00000011, B11111111, B11000000 },
   { B00000000, B00000000, B00000000, // Mouth position D
     B00000000, B00000000, B00000000,
-    B00111111, B11111111, B11111100,
-    B00100000, B00000000, B00000100,
-    B00010000, B00000000, B00001000,
-    B00001100, B00000000, B00110000,
-    B00000011, B10000001, B11000000,
-    B00000000, B01111110, B00000000 },
+    B00000000, B00000000, B00000000,
+    B00000000, B00000000, B00000000,
+    B00000000, B00000000, B00000000,
+    B00000000, B00000000, B00000000,
+    B00000000, B00000000, B00000000,
+    B00000000, B00000000, B00000000 },
   { B00000000, B00000000, B00000000, // Mouth position E
-    B00000000, B00111100, B00000000,
-    B00011111, B11000011, B11111000,
-    B00000011, B10000001, B11000000,
-    B00000000, B01111110, B00000000,
+    B00000000, B00000000, B00000000,
+    B00000000, B00000000, B00000000,
+    B00000000, B00000000, B00000000,
+    B00000000, B00000000, B00000000,
     B00000000, B00000000, B00000000,
     B00000000, B00000000, B00000000,
     B00000000, B00000000, B00000000 }},    
@@ -155,38 +153,38 @@ static const uint8_t PROGMEM // Bitmaps are stored in program memory
     B11111111, B11111111, B11111111,
     B11111111, B11111111, B11111111,
     B11111111, B11111111, B11111111 },
-  { B00000000, B00000000, B00000000, // Mouth position B
-    B00000000, B00000000, B00000000,
-    B00111111, B11111111, B11111100,
-    B00000111, B00000000, B11100000,
-    B00000000, B11111111, B00000000,
-    B00000000, B00000000, B00000000,
-    B00000000, B00000000, B00000000,
-    B00000000, B00000000, B00000000 },
-  { B00000000, B00000000, B00000000, // Mouth position C
-    B00000000, B00000000, B00000000,
-    B00111111, B11111111, B11111100,
-    B00001000, B00000000, B00010000,
-    B00000110, B00000000, B01100000,
-    B00000001, B11000011, B10000000,
-    B00000000, B00111100, B00000000,
-    B00000000, B00000000, B00000000 },
+  { B11111111, B11111111, B11111111, // Mouth position B
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111 },
+  { B00000011, B11111111, B11000000, // Mouth position C
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111 },
   { B00000000, B00000000, B00000000, // Mouth position D
-    B00000000, B00000000, B00000000,
-    B00111111, B11111111, B11111100,
-    B00100000, B00000000, B00000100,
-    B00010000, B00000000, B00001000,
-    B00001100, B00000000, B00110000,
-    B00000011, B10000001, B11000000,
-    B00000000, B01111110, B00000000 },
+    B00000011, B11111111, B11000000,
+    B00000011, B11111111, B11000000,
+    B00000011, B11111111, B11000000,
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111,
+    B11111111, B11111111, B11111111,
+    B00011111, B11111111, B11111000 },
   { B00000000, B00000000, B00000000, // Mouth position E
-    B00000000, B00111100, B00000000,
-    B00011111, B11000011, B11111000,
-    B00000011, B10000001, B11000000,
-    B00000000, B01111110, B00000000,
     B00000000, B00000000, B00000000,
     B00000000, B00000000, B00000000,
-    B00000000, B00000000, B00000000 }},
+    B00000000, B00000000, B00000000,
+    B11100000, B00000000, B00000111,
+    B11100000, B00000000, B00000111,
+    B11100000, B00000000, B00000111,
+    B00011111, B11111111, B11111000}},
     mouthImg3[][24] = {                 // Mouth animation frames
   { B11111111, B11111111, B11111111, // Mouth position A
     B11111111, B11111111, B11111111,
@@ -196,35 +194,35 @@ static const uint8_t PROGMEM // Bitmaps are stored in program memory
     B00000011, B11111111, B11000000,
     B00000011, B11111111, B11000000,
     B00000011, B11111111, B11000000,},
-  { B00000000, B00000000, B00000000, // Mouth position B
-    B00000000, B00000000, B00000000,
-    B00111111, B11111111, B11111100,
-    B00000111, B00000000, B11100000,
-    B00000000, B11111111, B00000000,
-    B00000000, B00000000, B00000000,
-    B00000000, B00000000, B00000000,
-    B00000000, B00000000, B00000000 },
-  { B00000000, B00000000, B00000000, // Mouth position C
-    B00000000, B00000000, B00000000,
-    B00111111, B11111111, B11111100,
-    B00001000, B00000000, B00010000,
-    B00000110, B00000000, B01100000,
-    B00000001, B11000011, B10000000,
+  { B11111111, B11111111, B11111111, // Mouth position B
+    B11111111, B11111111, B11111111,
+    B00011111, B11111111, B11111000,
+    B00011111, B11111111, B11111000,
+    B00011111, B11111111, B11111000,
+    B00000011, B11111111, B11000000,
+    B00000011, B11111111, B11000000,
+    B00000011, B11111111, B11000000 },
+  { B11111111, B11111111, B11111111, // Mouth position C
+    B11111111, B11111111, B11111111,
+    B00000011, B11111111, B11000000,
+    B00000011, B11111111, B11000000,
+    B00000011, B11111111, B11000000,
+    B00000000, B00111100, B00000000,
     B00000000, B00111100, B00000000,
     B00000000, B00000000, B00000000 },
-  { B00000000, B00000000, B00000000, // Mouth position D
-    B00000000, B00000000, B00000000,
-    B00111111, B11111111, B11111100,
-    B00100000, B00000000, B00000100,
-    B00010000, B00000000, B00001000,
-    B00001100, B00000000, B00110000,
-    B00000011, B10000001, B11000000,
-    B00000000, B01111110, B00000000 },
-  { B00000000, B00000000, B00000000, // Mouth position E
-    B00000000, B00111100, B00000000,
-    B00011111, B11000011, B11111000,
-    B00000011, B10000001, B11000000,
+  { B00011111, B11111111, B11111000, // Mouth position D
+    B00011111, B11111111, B11111000,
     B00000000, B01111110, B00000000,
+    B00000000, B01111110, B00000000,
+    B00000000, B01111110, B00000000,
+    B00000000, B00000000, B00000000,
+    B00000000, B00000000, B00000000,
+    B00000000, B00000000, B00000000 },
+  { B00011111, B11111111, B11111000, // Mouth position E
+    B00011111, B11111111, B11111000,
+    B00000000, B00000000, B00000000,
+    B00000000, B00000000, B00000000,
+    B00000000, B00000000, B00000000,
     B00000000, B00000000, B00000000,
     B00000000, B00000000, B00000000,
     B00000000, B00000000, B00000000 }};
@@ -237,21 +235,27 @@ uint8_t
   mouthPos       =   0, // Current image number for mouth
   mouthCountdown =  10; // Countdown to next mouth change
 int8_t
-  eyeX = 3, eyeY = 3,   // Current eye position
-  newX = 3, newY = 3,   // Next eye position
+  eyeX = 3, eyeY = 10,   // Current eye position
+  newX = 3, newY = 10,   // Next eye position
   dX   = 0, dY   = 0;   // Distance from prior to new position
 
 void setup() {
 
   // Seed random number generator from an unused analog input:
   randomSeed(analogRead(A0));
+  
+  Serial.begin(9600);
+  Serial.println("16x8 LED Matrix Test");
 
   // Initialize each matrix object:
-  for(uint8_t i=0; i<5; i++) {
+   for(uint8_t i=0; i<4; i++) {
     matrix[i].begin(matrixAddr[i]);
-    // If using 'small' (1.2") displays vs. 'mini' (0.8"), enable this:
-    // matrix[i].setRotation(3);
+    
+    if(i==3) matrix[i].setRotation(3);
   }
+  
+  matrix4.begin(matrixAddr[4]);
+  matrix4.setRotation(4);
 }
 
 void loop() {
@@ -272,12 +276,32 @@ void loop() {
     ], 16, 8, LED_ON);*/
     for(uint8_t i=0; i<3; i++) {
     matrix[MATRIX_EYES + i].clear();
-    matrix[MATRIX_EYES + i].drawBitmap(0-i*8, 0, mouthImg[0], 24, 8, LED_ON);
-    matrix[MATRIX_EYES + i].drawBitmap(0-i*8, 8, mouthImg2[0], 24, 16, LED_ON);
+    matrix[MATRIX_EYES + i].drawBitmap(0-i*8, 0, mouthImg[
+      (blinkCountdown < sizeof(blinkIndex)) ? // Currently blinking?
+      blinkIndex[blinkCountdown] :            // Yes, look up bitmap #
+      0], 24, 8, LED_ON);
+    matrix[MATRIX_EYES + i].drawBitmap(0-i*8, 8, mouthImg2[
+      (blinkCountdown < sizeof(blinkIndex)) ? // Currently blinking?
+      blinkIndex[blinkCountdown] :            // Yes, look up bitmap #
+      0], 24, 16, LED_ON);
     }
     
-    matrix[4].clear();
-    matrix[4].drawBitmap(0, 0, mouthImg3[0], 24, 8, LED_ON);    
+    matrix4.clear();
+    matrix4.drawBitmap(0, 0, mouthImg3[
+      (blinkCountdown < sizeof(blinkIndex)) ? // Currently blinking?
+      blinkIndex[blinkCountdown] :            // Yes, look up bitmap #
+      0], 24, 8, LED_ON); 
+ 
+    matrix[3].clear();
+    matrix[3].drawBitmap(-8, 0, mouthImg3[
+      (blinkCountdown < sizeof(blinkIndex)) ? // Currently blinking?
+      blinkIndex[blinkCountdown] :            // Yes, look up bitmap #
+      0], 24, 8, LED_ON);
+    
+ 
+ if(--blinkCountdown == 0) blinkCountdown = random(5, 180);
+ //matrix1.drawBitmap(0, 0, x6_bmp, 8, 8, LED_ON);
+  //matrix1.drawBitmap(8, 0, x9_bmp, 8,16, LED_ON);   
     /*
     for(uint8_t i=0; i<2; i++) {
     matrix[MATRIX_EYES + i].clear();
@@ -288,10 +312,75 @@ void loop() {
     ], 8, 8, LED_ON);
   }*/
   // Decrement blink counter.  At end, set random time for next blink.
-   
+  if(--gazeCountdown <= gazeFrames) {
+    // Eyes are in motion - draw pupil at interim position
+    
+    if((newX - (dX * gazeCountdown / gazeFrames)) >5){
+    
+     matrix[2].fillCircle(
+      newX - (dX * gazeCountdown / gazeFrames)-8,
+      newY - (dY * gazeCountdown / gazeFrames),
+      2,LED_OFF);
+    
+    }
+    
+    if((newX - (dX * gazeCountdown / gazeFrames)) <3){
+    
+     matrix[0].fillCircle(
+      newX - (dX * gazeCountdown / gazeFrames)+8,
+      newY - (dY * gazeCountdown / gazeFrames),
+      2,LED_OFF);
+    
+    matrix4.fillCircle(
+      newX - (dX * gazeCountdown / gazeFrames),
+      newY - (dY * gazeCountdown / gazeFrames)+8,
+      2,LED_OFF);
+    }
+    
+    if((newY - (dY * gazeCountdown / gazeFrames)) >16){
+    
+     matrix[3].fillCircle(
+      newX - (dX * gazeCountdown / gazeFrames),
+      newY - (dY * gazeCountdown / gazeFrames)-16,
+      2,LED_OFF);
+    
+    }
+    matrix[1].fillCircle(
+      newX - (dX * gazeCountdown / gazeFrames),
+      newY - (dY * gazeCountdown / gazeFrames),
+      2,LED_OFF);
+      
+     Serial.println(newX - (dX * gazeCountdown / gazeFrames));
+     Serial.println(newY - (dY * gazeCountdown / gazeFrames));
+      
+    if(gazeCountdown == 0) {    // Last frame?
+      eyeX = newX; eyeY = newY; // Yes.  What's new is old, then...
+      do { // Pick random positions until one is within the eye circle
+        newX = random(20); newY = random(20);
+        dX   = newX - 3;  dY   = newY - 10;
+      } while((dX * dX + dY * dY) >= 40);      // Thank you Pythagoras
+      dX            = newX - eyeX;             // Horizontal distance to move
+      dY            = newY - eyeY;             // Vertical distance to move
+      gazeFrames    = random(3, 15);           // Duration of eye movement
+      gazeCountdown = random(gazeFrames, 120); // Count to end of next movement
+    }
+  } else {
+    // Not in motion yet -- draw pupil at current static position
+    //matrix[1].fillRect(eyeX, eyeY, 3, 3, LED_OFF);
+    //matrix[2].fillRect(eyeX-8, eyeY, 3, 3, LED_OFF);
+    matrix[0].fillCircle(eyeX+8, eyeY, 2,LED_OFF);
+    matrix[1].fillCircle(eyeX, eyeY, 2,LED_OFF);
+    matrix[2].fillCircle(eyeX-8, eyeY, 2,LED_OFF);
+    matrix[3].fillCircle(eyeX, eyeY-16, 2,LED_OFF);
+    matrix4.fillCircle(eyeX, eyeY+8, 2,LED_OFF);
+    
+    
+    //fillCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color),
+  }   
 
   // Refresh all of the matrices in one quick pass
   for(uint8_t i=0; i<4; i++) matrix[i].writeDisplay();
+  matrix4.writeDisplay();
   //matrix
   delay(20); // ~50 FPS
 }
